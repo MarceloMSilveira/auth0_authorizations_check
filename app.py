@@ -47,29 +47,47 @@ def get_jwt():
   authorz_data = request.headers['Authorization'].split(' ')
   
   if authorz_data[0] != 'Bearer':
-    abort(401)
+    abort(400)
   elif len(authorz_data) != 2:
     abort(401)
 
   return authorz_data[1]
   
+def check_permissions(permission,payload):
+  if 'permissions' not in payload:
+    abort(401)
+  
+  if permission not in payload['permissions']:
+     abort(403)
 
-def check_authorization(func):
-  @wraps(func)
-  def wrapper(*args, **kwargs):
-    jwt = get_jwt()
-
-    payload = verify_decode_jwt(jwt)
+  return True
     
-    if payload is None:
-            abort(401, description="Token inválido ou expirado")
 
-    return func(payload,*args,**kwargs)
+def check_authorization(permission=''):
+  def check_authentication(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+      jwt = get_jwt()
 
-  return wrapper
+      payload = verify_decode_jwt(jwt)
+      
+      if payload is None:
+              abort(401, description="Token inválido ou expirado")
 
-@app.route('/headers')
-@check_authorization
+      check_permissions(permission,payload)
+
+      return func(payload,*args,**kwargs)
+    return wrapper
+  return check_authentication
+
+# @app.route('/headers')
+# @check_authorization
+# def headers(rec_jwt):
+#   print(rec_jwt)
+#   return 'Not implemented!'
+
+@app.route('/image')
+@check_authorization('get:images')
 def headers(rec_jwt):
   print(rec_jwt)
   return 'Not implemented!'
