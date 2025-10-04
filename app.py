@@ -58,7 +58,7 @@ def check_permissions(permission,payload):
     abort(401)
   
   if permission not in payload['permissions']:
-     abort(403)
+     abort(403, description='Você não tem a autorização necessária para esse acesso!')
 
   return True
     
