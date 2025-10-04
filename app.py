@@ -80,12 +80,6 @@ def check_authorization(permission=''):
     return wrapper
   return check_authentication
 
-# @app.route('/headers')
-# @check_authorization
-# def headers(rec_jwt):
-#   print(rec_jwt)
-#   return 'Not implemented!'
-
 @app.route('/image')
 @check_authorization('get:images')
 def headers(rec_jwt):
