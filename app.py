@@ -82,6 +82,6 @@ def check_authorization(permission=''):
 
 @app.route('/image')
 @check_authorization('get:images')
-def headers(rec_jwt):
-  print(rec_jwt)
+def headers(payload):
+  print(payload)
   return 'Not implemented!'
